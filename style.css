@@ -1,0 +1,12 @@
+body {
+    background-color: rgb(247, 236, 204);
+    font-family: Arial 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif, sans-serif;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: rgb(104, 148, 211);
+    font-style: normal;
+    font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+}
