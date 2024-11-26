@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tapper - Cadastro e Compartilhamento</title>
+    <style>
+        :root {
+            --primary-color: #6894d3;
+            --bg-color: #f7eccc;
+            --text-color: #333;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Arial', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(104, 148, 211, 0.1);
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #5778b3;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
+        .receipt-live {
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .item-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            border-bottom: 1px solid #ddd;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-chip {
+            display: inline-flex;
+            align-items: center;
+            background: #e9ecef;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            margin: 0.2rem;
+            font-size: 0.9rem;
+        }
+
+        .user-chip.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .split-details {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .user-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Registration Section -->
+        <div class="card">
+            <h2>Cadastro de Usuário</h2>
+            <form id="registrationForm" onsubmit="handleRegistration(event)">
+                <div class="form-group">
+                    <label for="name">Nome Completo</label>
+                    <input type="text" id="name" required placeholder="Seu nome">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Telefone</label>
+                    <input type="tel" id="phone" required placeholder="(11) 99999-9999">
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" required placeholder="Mínimo 6 caracteres">
+                </div>
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </form>
+        </div>
+
+        <!-- Live Receipt Section -->
+        <div class="card">
+            <h2>Comanda em Tempo Real</h2>
+            <div class="users-grid">
+                <!-- Example Users -->
+                <div class="user-card">
+                    <div class="avatar">R</div>
+                    <div>Rayssa</div>
+                    <small>R$ 66,00</small>
+                </div>
+                <div class="user-card">
+                    <div class="avatar">V</div>
+                    <div>Vittor</div>
+                    <small>R$ 66,00</small>
+                </div>
+                <div class="user-card">
+                    <div class="avatar">V</div>
+                    <div>Victor</div>
+                    <small>R$ 66,00</small>
+                </div>
+                <div class="user-card">
+                    <div class="avatar">T</div>
+                    <div>Tiago</div>
+                    <small>R$ 66,00</small>
+                </div>
+                <div class="user-card">
+                    <div class="avatar">S</div>
+                    <div>Silvio</div>
+                    <small>R$ 66,00</small>
+                </div>
+            </div>
+
+            <div class="receipt-live">
+                <h3>Itens Pedidos</h3>
+                <ul class="item-list" id="itemList">
+                    <!-- Example Items -->
+                    <li class="item">
+                        <span>Cerveja Heineken</span>
+                        <span>R$ 15,00 (Vittor)</span>
+                    </li>
+                    <li class="item">
+                        <span>Porção de Batatas</span>
+                        <span>R$ 35,00 (Compartilhado)</span>
+                    </li>
+                    <li class="item">
+                        <span>Coca-Cola 600ml</span>
+                        <span>R$ 12,00 (Rayssa)</span>
+                    </li>
+                </ul>
+
+                <div class="split-details">
+                    <h4>Divisão Atual</h4>
+                    <div class="item">
+                        <span>Subtotal:</span>
+                        <span>R$ 240,00</span>
+                    </div>
+                    <div class="item">
+                        <span>Taxa de Serviço (10%):</span>
+                        <span>R$ 24,00</span>
+                    </div>
+                    <div class="item">
+                        <span><strong>Total:</strong></span>
+                        <span><strong>R$ 264,00</strong></span>
+                    </div>
+                    <div class="item">
+                        <span>Valor por pessoa:</span>
+                        <span>R$ 66,00</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-success" style="margin-top: 1rem;" onclick="addNewItem()">
+                    Adicionar Item
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulated user data
+        const users = [
+            { name: 'Rayssa', total: 66.00 },
+            { name: 'Vittor', total: 66.00 },
+            { name: 'Victor', total: 66.00 },
+            { name: 'Tiago', total: 66.00 },
+            { name: 'Silvio', total: 66.00 }
+        ];
+
+        // Example items that could be ordered
+        const menuItems = [
+            { name: 'Cerveja Heineken', price: 15.00 },
+            { name: 'Porção de Batatas', price: 35.00 },
+            { name: 'Coca-Cola 600ml', price: 12.00 },
+            { name: 'Porção de Frango', price: 45.00 },
+            { name: 'Água Mineral', price: 8.00 }
+        ];
+
+        function handleRegistration(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            
+            alert(`Cadastro realizado com sucesso!\nBem-vindo(a), ${name}!`);
+            event.target.reset();
+        }
+
+        function addNewItem() {
+            // Simulate adding a random item
+            const randomItem = menuItems[Math.floor(Math.random() * menuItems.length)];
+            const randomUser = users[Math.floor(Math.random() * users.length)];
+            
+            const itemList = document.getElementById('itemList');
+            const newItem = document.createElement('li');
+            newItem.className = 'item';
+            newItem.innerHTML = `
+                <span>${randomItem.name}</span>
+                <span>R$ ${randomItem.price.toFixed(2)} (${randomUser.name})</span>
+            `;
+            
+            itemList.appendChild(newItem);
+            updateTotals();
+        }
+
+        function updateTotals() {
+            // This would typically be connected to a backend
+            // For demo purposes, we're just showing static values
+            console.log('Totals updated');
+        }
+
+        // Simulate real-time updates
+        setInterval(() => {
+            if (Math.random() > 0.7) { // 30% chance of new item
+                addNewItem();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
