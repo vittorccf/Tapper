@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tapper - Recibo</title>
+    <!-- Include QR Code library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Include html2pdf library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #6894d3;
+            --bg-color: #f7eccc;
+            --text-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Arial', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .receipt-container {
+            background-color: white;
+            padding: 2rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .receipt-details {
+            margin-bottom: 2rem;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .receipt-total {
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-top: 2px solid #000;
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #5778b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            border-top: 1px solid #ddd;
+        }
+
+        #qrcode {
+            margin: 1rem 0;
+        }
+
+        .timestamp {
+            color: #666;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        @media print {
+            .actions, .btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="receipt" class="receipt-container">
+            <div class="receipt-header">
+                <h1>Tapper</h1>
+                <p>Recibo de Pagamento</p>
+                <p class="timestamp" id="timestamp"></p>
+            </div>
+
+            <div class="receipt-details">
+                <div class="receipt-row">
+                    <span>Comanda:</span>
+                    <span>Mesa 1</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Data:</span>
+                    <span id="date"></span>
+                </div>
+                <div class="receipt-row">
+                    <span>Hora:</span>
+                    <span id="time"></span>
+                </div>
+                <div class="receipt-row">
+                    <span>Número de Pessoas:</span>
+                    <span>4</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Subtotal:</span>
+                    <span>R$ 240,00</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Taxa de Serviço (10%):</span>
+                    <span>R$ 24,00</span>
+                </div>
+                <div class="receipt-row receipt-total">
+                    <span>Total:</span>
+                    <span>R$ 264,00</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Valor por Pessoa:</span>
+                    <span>R$ 66,00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" onclick="exportPDF()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Exportar PDF
+            </button>
+            <button class="btn btn-secondary" onclick="toggleQRCode()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <rect x="7" y="7" width="3" height="3"/>
+                    <rect x="14" y="7" width="3" height="3"/>
+                    <rect x="7" y="14" width="3" height="3"/>
+                    <rect x="14" y="14" width="3" height="3"/>
+                </svg>
+                Mostrar QR Code
+            </button>
+        </div>
+
+        <div class="qr-container" id="qrContainer" style="display: none;">
+            <h3>Escaneie para compartilhar o recibo</h3>
+            <div id="qrcode"></div>
+        </div>
+    </div>
+
+    <script>
+        // Set current date and time
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('date').textContent = now.toLocaleDateString('pt-BR');
+            document.getElementById('time').textContent = now.toLocaleTimeString('pt-BR');
+            document.getElementById('timestamp').textContent = `Gerado em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR')}`;
+        }
+
+        // Export to PDF
+        function exportPDF() {
+            const element = document.getElementById('receipt');
+            const opt = {
+                margin: 1,
+                filename: 'recibo-tapper.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // Toggle QR Code
+        function toggleQRCode() {
+            const container = document.getElementById('qrContainer');
+            const qrcodeDiv = document.getElementById('qrcode');
+            
+            if (container.style.display === 'none') {
+                container.style.display = 'flex';
+                qrcodeDiv.innerHTML = ''; // Clear previous QR code
+                
+                // Generate QR code with receipt data
+                const receiptData = {
+                    comanda: 'Mesa 1',
+                    data: document.getElementById('date').textContent,
+                    hora: document.getElementById('time').textContent,
+                    total: 'R$ 264,00',
+                    valorPorPessoa: 'R$ 66,00'
+                };
+
+                new QRCode(qrcodeDiv, {
+                    text: JSON.stringify(receiptData),
+                    width: 128,
+                    height: 128,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        // Initialize
+        updateDateTime();
+        setInterval(updateDateTime, 1000); // Update time every second
+    </script>
+</body>
+</html>
